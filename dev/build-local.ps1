@@ -15,7 +15,7 @@ Git-Checked $source @('merge-base', '--is-ancestor', '402f9788097e3a7488808c1b31
 $output = Join-Path $deved ('artifacts/local-build/' + [guid]::NewGuid().ToString('N'))
 $workspace = Join-Path $output 'source'
 [void][IO.Directory]::CreateDirectory($output)
-Git-Checked $source @('worktree', 'add', '--detach', $workspace, $sourceHead)
+Git-Checked $source @('worktree', 'add', '--detach', $workspace, $sourceHead) | Out-Host
 
 foreach ($relative in Get-Content -LiteralPath (Join-Path $PSScriptRoot 'local-import.paths')) {
     if ($relative -cnotmatch '\A[\w./-]+\z' -or $relative.StartsWith('/') -or ($relative.Split('/') -contains '..')) {

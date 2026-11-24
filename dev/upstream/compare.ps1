@@ -17,7 +17,8 @@ function Invoke-CompareGit([string[]] $arguments) {
     if ($LASTEXITCODE) { throw "Git comparison failed: $($arguments[0])." }
 }
 
-Invoke-CompareGit @('fetch', '--quiet', '--no-tags', 'https://github.com/' + $Repository + '.git', $Before, $After)
+$url = "https://github.com/$Repository.git"
+Invoke-CompareGit @('fetch', '--quiet', '--no-tags', $url, $Before, $After)
 Invoke-CompareGit @('log', '--oneline', "$Before..$After")
 Invoke-CompareGit @('diff', '--no-ext-diff', '--name-status', $Before, $After)
 Invoke-CompareGit @('diff', '--no-ext-diff', '--stat', $Before, $After)
