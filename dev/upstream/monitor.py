@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sys
+from time import sleep
 from urllib.error import HTTPError
 from urllib.parse import quote, urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
@@ -192,17 +193,25 @@ class Issues:
         self.api, self.base = api, base
         self.seen = None
 
+    def find_existing(self):
+        seen = {}
+        # The label-filtered list may lag behind issue creation. Read the
+        # repository issue list directly and match the marker on the first line.
+        for issue in self.api.pages(self.base + "/issues?state=all&sort=created&direction=desc"):
+            if "pull_request" in issue:
+                continue
+            marker, _, _ = (issue.get("body") or "").partition("\n")
+            if re.fullmatch(r"<!-- upstream-event:[a-z0-9-]+ -->", marker):
+                seen[marker] = issue
+        return seen
+
     def ensure(self, title, body, labels):
         if self.seen is None:
             existing_labels = {row["name"] for row in self.api.pages(self.base + "/labels")}
             for name, color in PALETTE.items():
                 if name not in existing_labels:
                     self.api.call(self.base + "/labels", method="POST", body={"name": name, "color": color})
-            self.seen = {}
-            for issue in self.api.pages(self.base + "/issues?state=all&labels=upstream"):
-                if "pull_request" not in issue:
-                    for marker in re.findall(r"<!-- upstream-event:[a-z0-9-]+ -->", issue.get("body") or ""):
-                        self.seen[marker] = issue
+            self.seen = self.find_existing()
         marker = body.splitlines()[0]
         created = marker not in self.seen
         if created:
@@ -291,9 +300,18 @@ def monitor(api, base, config):
 def test_api(api, base):
     issues = Issues(api, base)
     title = "[Upstream test] Controlled fixture"
-    body = "<!-- upstream-event:controlled-fixture-v1 -->\nSynthetic verification of issue creation and deduplication. No upstream update."
+    marker = "<!-- upstream-event:controlled-fixture-v2 -->"
+    body = marker + "\nSynthetic verification of issue creation and deduplication. No upstream update."
     created, issue = issues.ensure(title, body, ["upstream"])
-    again, same = Issues(api, base).ensure(title, body, ["upstream"])
+    restarted = Issues(api, base)
+    for delay in (0, 1, 2, 4):
+        sleep(delay)
+        restarted.seen = restarted.find_existing()
+        if marker in restarted.seen:
+            break
+    if marker not in restarted.seen:
+        raise RuntimeError("Created fixture is not visible in repository issue listing")
+    again, same = restarted.ensure(title, body, ["upstream"])
     if again or same["number"] != issue["number"]:
         raise RuntimeError("Issue deduplication failed")
     if same["state"] != "closed":
