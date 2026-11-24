@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="../../GameHelper/Plugin/IPSettings.cs" Link="IPSettings.cs" />
+    <Compile Include="../../GameHelper/Utils/JsonHelper.cs" Link="JsonHelper.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/ExchangeTraderSettings.cs" Link="ExchangeTraderSettings.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/SettlementPricing.cs" Link="SettlementPricing.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/TradingModels.cs" Link="TradingModels.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/StockIndex.cs" Link="StockIndex.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/PricingEngine.cs" Link="PricingEngine.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/OrderExecutor.cs" Link="OrderExecutor.cs" />
+    <Compile Include="../../Plugins/ExchangeTrader/TradeSession.cs" Link="TradeSession.cs" />
+  </ItemGroup>
+</Project>

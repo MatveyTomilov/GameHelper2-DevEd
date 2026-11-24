@@ -1,0 +1,12 @@
+{
+  "core": { "url": "https://github.com/Gordin/GameHelper2", "tag": "v2.9.0", "commit": "3f1b541cb7122ab4a710529c7780a85a75b1fde7" },
+  "plugins": [
+    { "name": "McpBridge", "url": "https://github.com/yokkenUA/McpBridge.git", "commit": "61ea02ddace650c6c4cd19b769a6ade9a7a2e5e9", "patch": "dev/mcp-bridge.patch" },
+    { "name": "RunecraftHelper", "url": "https://github.com/yokkenUA/RunecraftHelper.git", "commit": "7502fba6b316e606e9ab922acc6930987bf03d4d" }
+  ],
+  "reviewed": [
+    { "url": "https://github.com/gahehe/GameHelper2Fork", "commit": "00881841b36c9fad4ee19653a00d9a9e4b250a01" },
+    { "url": "https://github.com/MordWraith/Gamehelper", "commit": "7bb339403f0b1e9d042da7944a5c303621c7d455" },
+    { "url": "https://github.com/TahiKari/ExileCenter", "commit": "b36caea9850a97460da756e987c617f586cf3ef1" }
+  ]
+}

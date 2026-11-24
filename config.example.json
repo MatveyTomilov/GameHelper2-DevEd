@@ -1,0 +1,9 @@
+{
+  "core": {"AutomateNpcQuests": false, "HideSettingWindowOnStart": true},
+  "plugins": {
+    "McpBridge": {"Enable": true},
+    "ExchangeTrader": {"Enable": false},
+    "AutoHotKeyTrigger": {"Enable": false}
+  },
+  "exchangeTrader": {"UseMinimumStackValue": true, "MinimumStackSaleValue": 5, "ThresholdCurrency": 0}
+}

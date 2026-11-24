@@ -1,0 +1,17 @@
+{
+  "ghidra": {
+    "url": "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/ghidra_12.2_PUBLIC_20261016.zip",
+    "sha256": "2c2cd776db3c1f6a097ba418922378ac3649cadd5e844a6f5f088ae628a7be67",
+    "directory": "ghidra_12.2_PUBLIC"
+  },
+  "jdk": {
+    "url": "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jdk_x64_windows_hotspot_25.0.5.1_2.zip",
+    "sha256": "849d380ab0a64d9098e7d3a2de28beb73841c3b255c8284f019ccd8748c5eb5b",
+    "directory": "jdk-25.0.5.1+2"
+  },
+  "offsetRecovery": {
+    "url": "https://github.com/ExFy0/GameHelper2-Offset-Recovery-Framework.git",
+    "commit": "03393f73dc6343a06e1bea806a05dec956bd8d53",
+    "script": "OffsetRecoveryFramework.java"
+  }
+}
