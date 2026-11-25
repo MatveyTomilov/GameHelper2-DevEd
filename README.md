@@ -1,6 +1,6 @@
 # GameHelper2 DevEd
 
-GameHelper2 DevEd — независимая производная версия [GameHelper2](https://github.com/Gordin/GameHelper2) для Path of Exile 2. Этот приватный репозиторий хранит собственный код ExchangeTrader, диагностику, сценарии восстановления и мониторинг upstream. Для полной Windows-сборки нужна отдельная локальная интеграционная копия исходников. Перечень и причины приведены в [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+GameHelper2 DevEd — независимая производная версия [GameHelper2](https://github.com/Gordin/GameHelper2) для Path of Exile 2. Репозиторий хранит собственный код ExchangeTrader, диагностику, сценарии восстановления и мониторинг upstream. Для полной Windows-сборки нужна отдельная локальная интеграционная копия исходников. Перечень и причины приведены в [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## Готовый Release для Windows
 
