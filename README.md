@@ -1,10 +1,10 @@
 # GameHelper2 DevEd
 
-GameHelper2 DevEd — независимая производная версия [GameHelper2](https://github.com/Gordin/GameHelper2) для Path of Exile 2. Репозиторий хранит собственный код ExchangeTrader, диагностику, сценарии восстановления и мониторинг upstream. Для полной Windows-сборки нужна отдельная локальная интеграционная копия исходников. Перечень и причины приведены в [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+GameHelper2 DevEd — независимая производная версия GameHelper2 для Path of Exile 2. Репозиторий хранит код ExchangeTrader, диагностику, сценарии восстановления и мониторинг upstream. Для полной Windows-сборки используется локальная интеграционная копия исходников. [Оригинальный GameHelper2](https://github.com/Gordin/GameHelper2) · [Сторонние компоненты](THIRD_PARTY_NOTICES.md)
 
-## Готовый Release для Windows
+## Обновление GH2
 
-Скачайте архив `win-x64.zip` из [Releases](https://github.com/MatveyTomilov/GameHelper2-DevEd/releases/latest), распакуйте его целиком и запустите `GameHelper.exe`. Сборка рассчитана на PoE 2 Steam 0.5.5h и требует .NET Runtime 10 x64. Настройки плагинов открываются через F12. AutoBuild по умолчанию выключен.
+В релизах начиная с `v0.1.1` откройте **Общий → Обновить с GitHub и перезапустить**. GH2 проверит релиз, сохранит профиль и перезапустится из прежней папки. Для отката сохраняется одна предыдущая сборка. Gem Tracker находится в настройках плагина AutoBuild. [Последний релиз](https://github.com/MatveyTomilov/GameHelper2-DevEd/releases/latest)
 
 ## Локальная сборка
 
