@@ -57,7 +57,7 @@ public class VerifySignatureSites extends GhidraScript {
         new DisassembleCommand(start, bounds, true).applyTo(currentProgram, monitor);
 
         Instruction instruction = currentProgram.getListing().getInstructionContaining(displacement);
-        boolean confirmed = match.get("TargetInImage").getAsBoolean() && instruction != null &&
+        boolean confirmed = match.get("TargetValid").getAsBoolean() && instruction != null &&
             references(instruction, base.add(targetRva));
         return new Site(name, displacementRva, targetRva, instruction == null ? "" : instruction.toString(), confirmed);
     }
