@@ -96,6 +96,21 @@ try {
     $summary.signatureRepairCommit = Save-RehearsalCommit 'Restore independently checked static signatures' @($signatureFile)
     $after = Join-Path $output 'repaired-signatures'
     & "$tree/diagnose.ps1" -ClientExe $copy -ReportDirectory $after -Offline -GhidraHome $tools.ghidra -JdkHome $tools.jdk | Out-Null
+
+    # Keep the unique byte match but point the displacement marker at the call, which targets code.
+    $stateMask = Get-RecordedMask (Get-HistoricalFile $clean $signatureFile) 'Game States'
+    $callMask = $stateMask.Replace('^ ', '').Replace('E8 ?? ?? ?? ??', 'E8 ^ ?? ?? ?? ??')
+    $wrongTargetPatterns = Join-Path $output 'wrong-target-patterns.json'
+    $wrongTargetReport = Join-Path $output 'wrong-target-signatures.json'
+    Write-RecoveryJson $wrongTargetPatterns @(@{ name = 'Game States'; pattern = $callMask })
+    $wrongTarget = Test-RecoveryPatternFile $tree $copy $wrongTargetPatterns $wrongTargetReport
+    $wrongResults = Get-Content -LiteralPath $wrongTargetReport -Raw | ConvertFrom-Json -AsHashtable
+    $stateCall = $wrongResults.patterns | Where-Object Name -CEQ 'Game States'
+    if ($wrongTarget.staticExitCode -ne 1 -or $stateCall.Count -ne 1 -or
+        $stateCall.Candidates[0].TargetSection -cne '.text' -or $stateCall.Candidates[0].TargetValid) {
+        throw 'The scanner did not reject the unique signature that points to a code section.'
+    }
+    $summary.wrongTarget = $wrongTargetReport
     $summary.static = 'READY'
 
     if (-not $Offline) {
