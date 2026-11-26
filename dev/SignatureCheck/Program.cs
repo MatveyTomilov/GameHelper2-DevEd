@@ -45,7 +45,7 @@ try
     }
 
     var report = patterns.Values.Select(pattern => Scan(pattern, image, headers, optional.SizeOfImage)).ToArray();
-    var ok = report.All(result => result.Count == 1 && result.Candidates[0].TargetInImage);
+    var ok = report.All(result => result.Count == 1 && result.Candidates[0].TargetValid);
     Console.WriteLine(JsonSerializer.Serialize(new
     {
         file = Path.GetFileName(file),
@@ -73,6 +73,14 @@ static SignatureResult Scan(Pattern pattern, byte[] image, PEHeaders headers, in
         throw new BadImageFormatException($"Invalid signature definition: {pattern.Name}");
     }
 
+    // The terrain lookups are constant tables. The remaining references name mutable globals.
+    var (targetWidth, needsWrite) = pattern.Name switch
+    {
+        "Game States" or "File Root" => (sizeof(long), true),
+        "AreaChangeCounter" or "GameCullSize" => (sizeof(int), true),
+        "Terrain Rotator Helper" or "Terrain Rotation Selector" => (sizeof(byte), false),
+        _ => throw new InvalidDataException($"No target requirements for {pattern.Name}."),
+    };
     var count = 0;
     var candidates = new List<Match>();
     foreach (var section in headers.SectionHeaders)
@@ -108,8 +116,17 @@ static SignatureResult Scan(Pattern pattern, byte[] image, PEHeaders headers, in
                 var disp = BinaryPrimitives.ReadInt32LittleEndian(bytes.Slice(start + pattern.BytesToSkip, sizeof(int)));
                 var displacementRva = matchRva + pattern.BytesToSkip;
                 var targetRva = (long)displacementRva + sizeof(int) + disp;
-                candidates.Add(new Match(section.Name, matchRva, displacementRva, targetRva,
-                    targetRva >= 0 && targetRva < imageSize));
+                bool inImage = targetRva >= 0 && targetRva < imageSize;
+                var target = inImage ? headers.SectionHeaders.FirstOrDefault(candidate =>
+                    targetRva >= candidate.VirtualAddress &&
+                    targetRva < (long)candidate.VirtualAddress + candidate.VirtualSize) : default;
+                var flags = target.SectionCharacteristics;
+                bool valid = inImage && targetRva + targetWidth <= imageSize &&
+                    targetRva + targetWidth <= (long)target.VirtualAddress + target.VirtualSize &&
+                    flags.HasFlag(SectionCharacteristics.MemRead) &&
+                    !flags.HasFlag(SectionCharacteristics.MemExecute) &&
+                    (!needsWrite || flags.HasFlag(SectionCharacteristics.MemWrite));
+                candidates.Add(new Match(section.Name, matchRva, displacementRva, targetRva, inImage, target.Name, valid));
             }
         }
     }
@@ -131,5 +148,6 @@ static bool IsMatch(ReadOnlySpan<byte> bytes, Pattern pattern)
 }
 
 record SignatureResult(string Name, int Count, List<Match> Candidates);
-record Match(string Section, int MatchRva, int DisplacementRva, long TargetRva, bool TargetInImage);
+record Match(string Section, int MatchRva, int DisplacementRva, long TargetRva, bool TargetInImage,
+    string? TargetSection, bool TargetValid);
 record SignatureCandidate(string Name, string Pattern);

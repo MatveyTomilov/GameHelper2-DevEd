@@ -52,7 +52,7 @@ public class InspectFrameworkCoverage extends GhidraScript {
                 continue;
             }
             var row = candidates.get(0).getAsJsonObject();
-            if (!row.get("TargetInImage").getAsBoolean()) { continue; }
+            if (!row.get("TargetValid").getAsBoolean()) { continue; }
             Address displacement = imageBase.add(row.get("DisplacementRva").getAsLong());
             Address target = imageBase.add(row.get("TargetRva").getAsLong());
             Instruction instruction = currentProgram.getListing().getInstructionContaining(displacement);

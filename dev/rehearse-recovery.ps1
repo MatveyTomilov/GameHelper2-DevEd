@@ -86,7 +86,7 @@ try {
     $before = Join-Path $output 'stale-signatures'
     try { & "$tree/diagnose.ps1" -ClientExe $copy -ReportDirectory $before -Offline | Out-Null } catch { $summary.staticDetection = $_.Exception.Message }
     $broken = Get-Content -LiteralPath (Join-Path $before 'signatures.json') -Raw | ConvertFrom-Json -AsHashtable
-    $badNames = @($broken.patterns | Where-Object { $_.Count -ne 1 -or -not $_.Candidates[0].TargetInImage } | ForEach-Object Name)
+    $badNames = @($broken.patterns | Where-Object { $_.Count -ne 1 -or -not $_.Candidates[0].TargetValid } | ForEach-Object Name)
     if ($badNames.Count -ne 2 -or 'Game States' -notin $badNames -or 'AreaChangeCounter' -notin $badNames) {
         throw 'The scanner did not isolate the two historical signature faults.'
     }

@@ -224,9 +224,11 @@ function Compare-RecoveryFrameworkTargets {
         $configured = $Original.patterns | Where-Object Name -CEQ $suggestion.name | Select-Object -First 1
         $rva = [Convert]::ToInt64($suggestion.resolvedAddress, 16) - [long]$Rescan.imageBase
         $verdict = 'REVIEW_NO_UNIQUE_MATCH'
-        if ($candidate.Count -eq 1 -and $candidate.Candidates[0].TargetInImage) {
+        if ($candidate.Count -eq 1 -and -not $candidate.Candidates[0].TargetValid) {
+            $verdict = 'REVIEW_INVALID_TARGET_SECTION'
+        } elseif ($candidate.Count -eq 1) {
             $verdict = if ($candidate.Candidates[0].TargetRva -ne $rva) { 'REVIEW_DISASSEMBLY_MISMATCH' }
-                elseif ($configured.Count -ne 1) { 'REVIEW_NEW_TARGET' }
+                elseif ($configured.Count -ne 1 -or -not $configured.Candidates[0].TargetValid) { 'REVIEW_NEW_TARGET' }
                 elseif ($configured.Candidates[0].TargetRva -ne $rva) { 'REVIEW_CONFLICTING_TARGETS' }
                 else { 'AGREES_WITH_CONFIGURED_TARGET' }
         }
@@ -262,15 +264,18 @@ function Compare-RecoverySignatures {
 
     foreach ($pattern in $Current.patterns) {
         $old = $previous[$pattern.Name]
-        $one = $pattern.Count -eq 1 -and $pattern.Candidates[0].TargetInImage -eq $true
+        $target = if ($pattern.Count -eq 1) { $pattern.Candidates[0] }
+        $one = $target.TargetValid -eq $true
         $oldRva = if ($old -and $old.Count -eq 1) { $old.Candidates[0].TargetRva }
         [ordered] @{
             name = $pattern.Name
             count = $pattern.Count
             verdict = if ($one) { 'UNIQUE' } elseif ($pattern.Count -eq 0) { 'MISSING' }
-                elseif ($pattern.Count -gt 1) { 'AMBIGUOUS' } else { 'OUTSIDE_IMAGE' }
-            matchRva = if ($one) { $pattern.Candidates[0].MatchRva }
-            targetRva = if ($one) { $pattern.Candidates[0].TargetRva }
+                elseif ($pattern.Count -gt 1) { 'AMBIGUOUS' }
+                elseif ($target.TargetInImage) { 'INVALID_TARGET_SECTION' } else { 'OUTSIDE_IMAGE' }
+            matchRva = $target.MatchRva
+            targetRva = $target.TargetRva
+            targetSection = $target.TargetSection
             previousCount = if ($old) { $old.Count }
             previousTargetRva = $oldRva
             targetRvaDelta = if ($one -and $null -ne $oldRva) { $pattern.Candidates[0].TargetRva - $oldRva }
